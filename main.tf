@@ -30,3 +30,8 @@ module "lambda" {
     update_course_arn   = module.iam.update_course_role_arn
    
 }
+
+module "api" {
+    source = "./modules/api"
+    name = "my-api"
+}
