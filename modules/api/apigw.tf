@@ -453,6 +453,7 @@ resource "aws_lambda_permission" "get_course" {
   source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
 }
 
+
 //Put method for get course
 resource "aws_api_gateway_method" "put_method" {
   rest_api_id   = aws_api_gateway_rest_api.my_api.id
@@ -467,21 +468,17 @@ resource "aws_api_gateway_integration" "put" {
   http_method = aws_api_gateway_method.put_method.http_method
   integration_http_method = "POST"
   type = "AWS"
-  uri = var.save_course_invoke_arn
+  uri = var.update_course_invoke_arn
   
   request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
 
-     request_templates = {
-      "application/xml" = <<EOF
-        {
-          "id": "$input.params('id')",
-          "title": "$input.params('$.title')",
-          "authorId": "$input.params('$.authorId')",
-          "length": "$input.params('$.length')",
-          "category": "$input.params('$.category')"
-        }
-      EOF
-    }
+      request_templates = {
+    "application/xml" = <<EOF
+{
+   "body" : $input.json('$')
+}
+EOF
+  }
 
   content_handling = "CONVERT_TO_TEXT"
 }
@@ -520,7 +517,7 @@ resource "aws_api_gateway_integration_response" "put" {
 resource "aws_lambda_permission" "api_gateway_invoke_put_course" {
   statement_id  = "AllowAPIGatewayInvokePUTLambda"
   action        = "lambda:InvokeFunction"
-  function_name = var.save_course_arn
+  function_name = var.update_course_arn
   principal     = "apigateway.amazonaws.com"
 }
 
