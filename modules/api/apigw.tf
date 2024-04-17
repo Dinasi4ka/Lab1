@@ -31,6 +31,17 @@ resource "aws_api_gateway_integration" "get_all_authors" {
   type = "AWS"
 
   uri = var.get_all_authors_invoke_arn
+
+   request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+
+     request_templates       = {
+    "application/xml" = <<EOF
+  {
+     "body" : $input.json('$')
+  }
+  EOF
+  }
+  content_handling = "CONVERT_TO_TEXT"
 }
 
 // Create a method response for the API Gateway
@@ -54,11 +65,16 @@ resource "aws_api_gateway_integration_response" "get_all_authors" {
   http_method = aws_api_gateway_method.get_all_authors.http_method
   status_code = aws_api_gateway_method_response.get_all_authors.status_code
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = "'*'",
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
+ response_templates = {
+  "application/xml" = <<EOF
+  {
+     "body" : $input.json('$')
   }
+  EOF
+}
+
+
+  content_handling = "CONVERT_TO_TEXT"
 }
 
 // Create a lambda permission for the API Gateway
@@ -89,6 +105,8 @@ resource "aws_api_gateway_integration" "authors_options_integration" {
   type                    = "AWS"
 
   uri = var.get_all_authors_invoke_arn
+
+  depends_on = [ aws_api_gateway_method.authors_options ]
 }
 
 //Create a method response
@@ -103,6 +121,7 @@ resource "aws_api_gateway_method_response" "authors_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin" = true
    }
+   depends_on = [ aws_api_gateway_method.authors_options ]
 }
 
 //Create an integration response
@@ -117,6 +136,10 @@ resource "aws_api_gateway_integration_response" "authors_options_integration_res
         "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
+
+    depends_on = [
+     aws_api_gateway_method_response.authors_options_response
+    ]
 }
 
 
@@ -153,6 +176,17 @@ resource "aws_api_gateway_integration" "get_all_courses" {
   type = "AWS"
 
   uri = var.get_all_courses_invoke_arn
+
+  request_parameters  = {"integration.request.header.X-Authorization" = "'static'"}
+
+     request_templates       = {
+    "application/xml" = <<EOF
+  {
+     "body" : $input.json('$')
+  }
+  EOF
+  }
+  content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_api_gateway_method_response" "get_all_courses" {
@@ -176,11 +210,15 @@ resource "aws_api_gateway_integration_response" "get_all_courses" {
   http_method = aws_api_gateway_method.get_all_courses.http_method
   status_code = aws_api_gateway_method_response.get_all_courses.status_code
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = "'*'",
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET, OPTIONS'"
+ response_templates = {
+  "application/xml" = <<EOF
+  {
+     "body" : $input.json('$')
   }
+  EOF
+}
+
+  content_handling = "CONVERT_TO_TEXT"
 }
 
 //Options for all courses//
@@ -200,6 +238,8 @@ resource "aws_api_gateway_integration" "courses_options_integration" {
   type                    = "AWS"
  
   uri = var.get_all_courses_invoke_arn
+
+  depends_on = [ aws_api_gateway_method.courses_options ]
 }
 
 resource "aws_api_gateway_method_response" "courses_options_response" {
@@ -213,6 +253,7 @@ resource "aws_api_gateway_method_response" "courses_options_response" {
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin" = true
    }
+   depends_on = [ aws_api_gateway_method.courses_options ]
 }
 
 resource "aws_api_gateway_integration_response" "courses_options_integration_response" {
@@ -226,6 +267,10 @@ resource "aws_api_gateway_integration_response" "courses_options_integration_res
         "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
+
+    depends_on = [
+     aws_api_gateway_method_response.courses_options_response
+    ]
 }
 
 //Post for all courses//
@@ -277,6 +322,17 @@ resource "aws_api_gateway_integration" "post_courses" {
   type = "AWS"
 
   uri = var.save_course_invoke_arn
+
+   request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+
+     request_templates       = {
+    "application/xml" = <<EOF
+  {
+     "body" : $input.json('$')
+  }
+  EOF
+  }
+  content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_api_gateway_method_response" "post_courses" {
@@ -298,6 +354,17 @@ resource "aws_api_gateway_integration_response" "post_courses" {
   resource_id = aws_api_gateway_resource.courses.id
   http_method = aws_api_gateway_method.post_courses.http_method
   status_code = aws_api_gateway_method_response.post_courses.status_code
+
+  response_templates = {
+  "application/xml" = <<EOF
+  {
+     "body" : $input.json('$')
+  }
+  EOF
+}
+
+
+  content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_lambda_permission" "api_gateway_invoke_post_courses" {
@@ -305,4 +372,286 @@ resource "aws_lambda_permission" "api_gateway_invoke_post_courses" {
   action        = "lambda:InvokeFunction"
   function_name = var.save_course_arn
   principal     = "apigateway.amazonaws.com"
+}
+
+
+//GET COURSE//
+resource "aws_api_gateway_resource" "course_by_id" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  parent_id   = aws_api_gateway_resource.courses.id
+  path_part   = "{id}"
+}
+
+resource "aws_api_gateway_method" "get_course" {
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  resource_id   = aws_api_gateway_resource.course_by_id.id
+  http_method   = "GET"
+  authorization = "NONE"
+  request_validator_id = aws_api_gateway_request_validator.my_api.id
+}
+
+resource "aws_api_gateway_integration" "get_course" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.get_course.http_method
+  integration_http_method = "POST"
+
+  type = "AWS"
+
+  uri = var.get_course_invoke_arn
+
+  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+
+request_templates = {
+  "application/json" = <<EOF
+{
+  "id": "$input.params('id')"
+}
+EOF
+}
+
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+resource "aws_api_gateway_method_response" "get_course" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.get_course.http_method
+  status_code = "200"
+
+  response_models = { "application/json" = aws_api_gateway_model.my_api.name }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "get_course" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.get_course.http_method
+  status_code = aws_api_gateway_method_response.get_course.status_code
+
+ response_templates = {
+  "application/json" = <<EOF
+{
+  "body" : $input.json('$')
+}
+EOF
+}
+
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+resource "aws_lambda_permission" "get_course" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = var.get_course_arn
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
+}
+
+//Put method for get course
+resource "aws_api_gateway_method" "put_method" {
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  resource_id   = aws_api_gateway_resource.course_by_id.id
+  http_method   = "PUT"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "put" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.put_method.http_method
+  integration_http_method = "POST"
+  type = "AWS"
+  uri = var.save_course_invoke_arn
+  
+  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+
+     request_templates = {
+      "application/xml" = <<EOF
+        {
+          "id": "$input.params('id')",
+          "title": "$input.params('$.title')",
+          "authorId": "$input.params('$.authorId')",
+          "length": "$input.params('$.length')",
+          "category": "$input.params('$.category')"
+        }
+      EOF
+    }
+
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+resource "aws_api_gateway_method_response" "put" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.put_method.http_method
+  status_code = "200"
+
+  response_models = { "application/json" = "Empty" }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin" = false
+  }
+}
+
+resource "aws_api_gateway_integration_response" "put" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.put_method.http_method
+  status_code = aws_api_gateway_method_response.put.status_code
+
+  response_templates = {
+    "application/xml" = <<EOF
+    {
+      "body" : $input.json('$')
+    }
+    EOF
+  }
+
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+resource "aws_lambda_permission" "api_gateway_invoke_put_course" {
+  statement_id  = "AllowAPIGatewayInvokePUTLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = var.save_course_arn
+  principal     = "apigateway.amazonaws.com"
+}
+
+//Delete method
+resource "aws_api_gateway_method" "delete" {
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  resource_id   = aws_api_gateway_resource.course_by_id.id
+  http_method   = "DELETE"
+  authorization = "NONE"
+  request_validator_id = aws_api_gateway_request_validator.my_api.id
+}
+
+resource "aws_api_gateway_integration" "delete_course" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.delete.http_method
+  integration_http_method = "POST"
+  type = "AWS"
+  uri = var.delete_course_invoke_arn
+  
+  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+
+  request_templates = {
+    "application/json" = <<EOF
+      {
+        "id": "$input.params('id')"
+      }
+    EOF
+  }
+
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+resource "aws_api_gateway_method_response" "delete_course" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.delete.http_method
+  status_code = "200"
+
+  response_models = { "application/json" = aws_api_gateway_model.my_api.name }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin" = false
+  }
+}
+
+resource "aws_api_gateway_integration_response" "delete_course" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.delete.http_method
+  status_code = aws_api_gateway_method_response.delete_course.status_code
+
+response_templates = {
+  "application/json" = <<EOF
+{
+  "body" : $input.json('$')
+}
+EOF
+}
+
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+resource "aws_lambda_permission" "api_gateway_invoke_delete_course" {
+  statement_id  = "AllowAPIGatewayInvokeDeleteLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = var.delete_course_arn
+  principal     = "apigateway.amazonaws.com"
+}
+
+
+//Options
+resource "aws_api_gateway_method" "id_options" {
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  resource_id   = aws_api_gateway_resource.course_by_id.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method_response" "id_options_response" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.id_options.http_method
+  status_code = "200"
+
+   response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true
+   }
+   depends_on = [ aws_api_gateway_method.id_options ]
+}
+
+resource "aws_api_gateway_integration" "id_options_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.my_api.id
+  resource_id             = aws_api_gateway_resource.course_by_id.id
+  http_method             = aws_api_gateway_method.id_options.http_method
+  integration_http_method = "POST"
+  type                    = "AWS"
+
+  uri = var.get_course_invoke_arn
+
+  depends_on = [ aws_api_gateway_method.id_options ]
+}
+
+resource "aws_api_gateway_integration_response" "id_options_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  resource_id = aws_api_gateway_resource.course_by_id.id
+  http_method = aws_api_gateway_method.id_options.http_method
+  status_code = aws_api_gateway_method_response.id_options_response.status_code
+
+  response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
+
+    depends_on = [
+     aws_api_gateway_method_response.id_options_response,
+     aws_api_gateway_integration.id_options_integration
+    ]
+}
+
+resource "aws_api_gateway_deployment" "deployment" {
+  depends_on = [
+    aws_api_gateway_integration.get_all_authors,
+    aws_api_gateway_integration.get_all_courses,
+  ]
+
+
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+  stage_name = "dev"
 }
