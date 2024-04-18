@@ -72,7 +72,11 @@ resource "aws_api_gateway_integration_response" "get_all_authors" {
   }
   EOF
 }
-
+response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'GET, OPTIONS'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
 
   content_handling = "CONVERT_TO_TEXT"
 }
@@ -133,7 +137,7 @@ resource "aws_api_gateway_integration_response" "authors_options_integration_res
 
   response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
+        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT,DELETE'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
 
@@ -218,6 +222,11 @@ resource "aws_api_gateway_integration_response" "get_all_courses" {
   EOF
 }
 
+response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
   content_handling = "CONVERT_TO_TEXT"
 }
 
@@ -264,7 +273,7 @@ resource "aws_api_gateway_integration_response" "courses_options_integration_res
 
   response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
+        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT,DELETE'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
 
@@ -363,7 +372,11 @@ resource "aws_api_gateway_integration_response" "post_courses" {
   EOF
 }
 
-
+  response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST,PUT,GET'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
   content_handling = "CONVERT_TO_TEXT"
 }
 
@@ -511,6 +524,12 @@ resource "aws_api_gateway_integration_response" "put" {
     EOF
   }
 
+   response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,PUT'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
+
   content_handling = "CONVERT_TO_TEXT"
 }
 
@@ -579,6 +598,12 @@ response_templates = {
 EOF
 }
 
+response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS, DELETE'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
+
   content_handling = "CONVERT_TO_TEXT"
 }
 
@@ -632,7 +657,7 @@ resource "aws_api_gateway_integration_response" "id_options_integration_response
 
   response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
+        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT,DELETE'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
 
@@ -652,3 +677,5 @@ resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
   stage_name = "dev"
 }
+
+
