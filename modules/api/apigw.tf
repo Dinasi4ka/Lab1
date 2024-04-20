@@ -453,6 +453,11 @@ resource "aws_api_gateway_integration_response" "get_course" {
 }
 EOF
 }
+ response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS, POST'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
 
   content_handling = "CONVERT_TO_TEXT"
 }
