@@ -32,16 +32,16 @@ resource "aws_api_gateway_integration" "get_all_authors" {
 
   uri = var.get_all_authors_invoke_arn
 
-   request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+  #  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
 
-     request_templates       = {
-    "application/xml" = <<EOF
-  {
-     "body" : $input.json('$')
-  }
-  EOF
-  }
-  content_handling = "CONVERT_TO_TEXT"
+  #    request_templates       = {
+  #   "application/xml" = <<EOF
+  # {
+  #    "body" : $input.json('$')
+  # }
+  # EOF
+  # }
+  #  content_handling = "CONVERT_TO_TEXT"
 }
 
 // Create a method response for the API Gateway
@@ -65,20 +65,24 @@ resource "aws_api_gateway_integration_response" "get_all_authors" {
   http_method = aws_api_gateway_method.get_all_authors.http_method
   status_code = aws_api_gateway_method_response.get_all_authors.status_code
 
- response_templates = {
-  "application/xml" = <<EOF
-  {
-     "body" : $input.json('$')
-  }
-  EOF
-}
+depends_on = [
+    aws_api_gateway_integration.get_all_authors
+  ]
+
+#  response_templates = {
+#   "application/xml" = <<EOF
+#   {
+#      "body" : $input.json('$')
+#   }
+#   EOF
+# }
 response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
         "method.response.header.Access-Control-Allow-Methods" = "'GET, OPTIONS'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
 
-  content_handling = "CONVERT_TO_TEXT"
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 // Create a lambda permission for the API Gateway
@@ -181,16 +185,20 @@ resource "aws_api_gateway_integration" "get_all_courses" {
 
   uri = var.get_all_courses_invoke_arn
 
-  request_parameters  = {"integration.request.header.X-Authorization" = "'static'"}
+  request_templates = {
+    "application/json" = "{\"id\": \"$input.params('id')\"}"
+  }
 
-     request_templates       = {
-    "application/xml" = <<EOF
-  {
-     "body" : $input.json('$')
-  }
-  EOF
-  }
-  content_handling = "CONVERT_TO_TEXT"
+  # request_parameters  = {"integration.request.header.X-Authorization" = "'static'"}
+
+  #    request_templates       = {
+  #   "application/xml" = <<EOF
+  # {
+  #    "body" : $input.json('$')
+  # }
+  # EOF
+  # }
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_api_gateway_method_response" "get_all_courses" {
@@ -199,7 +207,7 @@ resource "aws_api_gateway_method_response" "get_all_courses" {
   http_method = aws_api_gateway_method.get_all_courses.http_method
   status_code = "200"
 
-  response_models = { "application/json" = "Empty" }
+  # response_models = { "application/json" = "Empty" }
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
@@ -213,21 +221,24 @@ resource "aws_api_gateway_integration_response" "get_all_courses" {
   resource_id = aws_api_gateway_resource.courses.id
   http_method = aws_api_gateway_method.get_all_courses.http_method
   status_code = aws_api_gateway_method_response.get_all_courses.status_code
-
- response_templates = {
-  "application/xml" = <<EOF
-  {
-     "body" : $input.json('$')
-  }
-  EOF
-}
+ 
+ depends_on = [
+    aws_api_gateway_integration.get_all_courses
+  ]
+#  response_templates = {
+#   "application/xml" = <<EOF
+#   {
+#      "body" : $input.json('$')
+#   }
+#   EOF
+# }
 
 response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
         "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
-  content_handling = "CONVERT_TO_TEXT"
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 //Options for all courses//
@@ -332,7 +343,7 @@ resource "aws_api_gateway_integration" "post_courses" {
 
   uri = var.save_course_invoke_arn
 
-   request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+  #  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
 
      request_templates       = {
     "application/xml" = <<EOF
@@ -364,20 +375,21 @@ resource "aws_api_gateway_integration_response" "post_courses" {
   http_method = aws_api_gateway_method.post_courses.http_method
   status_code = aws_api_gateway_method_response.post_courses.status_code
 
-  response_templates = {
-  "application/xml" = <<EOF
-  {
-     "body" : $input.json('$')
-  }
-  EOF
-}
+
+#   response_templates = {
+#   "application/xml" = <<EOF
+#   {
+#      "body" : $input.json('$')
+#   }
+#   EOF
+# }
 
   response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
         "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST,PUT,GET'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
-  content_handling = "CONVERT_TO_TEXT"
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_lambda_permission" "api_gateway_invoke_post_courses" {
@@ -413,7 +425,7 @@ resource "aws_api_gateway_integration" "get_course" {
 
   uri = var.get_course_invoke_arn
 
-  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+  # request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
 
 request_templates = {
   "application/json" = <<EOF
@@ -423,7 +435,7 @@ request_templates = {
 EOF
 }
 
-  content_handling = "CONVERT_TO_TEXT"
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_api_gateway_method_response" "get_course" {
@@ -432,7 +444,11 @@ resource "aws_api_gateway_method_response" "get_course" {
   http_method = aws_api_gateway_method.get_course.http_method
   status_code = "200"
 
-  response_models = { "application/json" = aws_api_gateway_model.my_api.name }
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  # response_models = { "application/json" = aws_api_gateway_model.my_api.name }
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = true,
     "method.response.header.Access-Control-Allow-Methods" = true,
@@ -446,20 +462,23 @@ resource "aws_api_gateway_integration_response" "get_course" {
   http_method = aws_api_gateway_method.get_course.http_method
   status_code = aws_api_gateway_method_response.get_course.status_code
 
- response_templates = {
-  "application/json" = <<EOF
-{
-  "body" : $input.json('$')
-}
-EOF
-}
+ depends_on = [
+    aws_api_gateway_integration.get_course
+  ]
+#  response_templates = {
+#   "application/json" = <<EOF
+# {
+#   "body" : $input.json('$')
+# }
+# EOF
+# }
  response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
         "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS, POST'",
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
 
-  content_handling = "CONVERT_TO_TEXT"
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_lambda_permission" "get_course" {
@@ -488,7 +507,7 @@ resource "aws_api_gateway_integration" "put" {
   type = "AWS"
   uri = var.update_course_invoke_arn
   
-  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
+#   request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
 
       request_templates = {
     "application/xml" = <<EOF
@@ -498,7 +517,7 @@ resource "aws_api_gateway_integration" "put" {
 EOF
   }
 
-  content_handling = "CONVERT_TO_TEXT"
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_api_gateway_method_response" "put" {
@@ -521,13 +540,13 @@ resource "aws_api_gateway_integration_response" "put" {
   http_method = aws_api_gateway_method.put_method.http_method
   status_code = aws_api_gateway_method_response.put.status_code
 
-  response_templates = {
-    "application/xml" = <<EOF
-    {
-      "body" : $input.json('$')
-    }
-    EOF
-  }
+  # response_templates = {
+  #   "application/xml" = <<EOF
+  #   {
+  #     "body" : $input.json('$')
+  #   }
+  #   EOF
+  # }
 
    response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
@@ -535,7 +554,7 @@ resource "aws_api_gateway_integration_response" "put" {
         "method.response.header.Access-Control-Allow-Origin" = "'*'"
     }
 
-  content_handling = "CONVERT_TO_TEXT"
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_lambda_permission" "api_gateway_invoke_put_course" {
@@ -543,6 +562,8 @@ resource "aws_lambda_permission" "api_gateway_invoke_put_course" {
   action        = "lambda:InvokeFunction"
   function_name = var.update_course_arn
   principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
 }
 
 //Delete method
@@ -561,18 +582,22 @@ resource "aws_api_gateway_integration" "delete_course" {
   integration_http_method = "POST"
   type = "AWS"
   uri = var.delete_course_invoke_arn
-  
-  request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
 
-  request_templates = {
-    "application/json" = <<EOF
-      {
-        "id": "$input.params('id')"
-      }
-    EOF
+   request_templates = {
+    "application/json" = "{\"id\": \"$input.params('id')\"}"
   }
+  
+  # request_parameters      = {"integration.request.header.X-Authorization" = "'static'"}
 
-  content_handling = "CONVERT_TO_TEXT"
+  # request_templates = {
+  #   "application/json" = <<EOF
+  #     {
+  #       "id": "$input.params('id')"
+  #     }
+  #   EOF
+  # }
+
+  # content_handling = "CONVERT_TO_TEXT"
 }
 
 resource "aws_api_gateway_method_response" "delete_course" {
@@ -581,7 +606,11 @@ resource "aws_api_gateway_method_response" "delete_course" {
   http_method = aws_api_gateway_method.delete.http_method
   status_code = "200"
 
-  response_models = { "application/json" = aws_api_gateway_model.my_api.name }
+   response_models = {
+    "application/json" = "Empty"
+  }
+
+  # response_models = { "application/json" = aws_api_gateway_model.my_api.name }
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = true,
     "method.response.header.Access-Control-Allow-Methods" = true,
@@ -595,13 +624,16 @@ resource "aws_api_gateway_integration_response" "delete_course" {
   http_method = aws_api_gateway_method.delete.http_method
   status_code = aws_api_gateway_method_response.delete_course.status_code
 
-response_templates = {
-  "application/json" = <<EOF
-{
-  "body" : $input.json('$')
-}
-EOF
-}
+depends_on = [
+    aws_api_gateway_integration.delete_course
+  ]
+# response_templates = {
+#   "application/json" = <<EOF
+# {
+#   "body" : $input.json('$')
+# }
+# EOF
+# }
 
 response_parameters = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
@@ -617,6 +649,8 @@ resource "aws_lambda_permission" "api_gateway_invoke_delete_course" {
   action        = "lambda:InvokeFunction"
   function_name = var.delete_course_arn
   principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
 }
 
 
